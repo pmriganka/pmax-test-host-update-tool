@@ -1,0 +1,16 @@
+{
+"Automation Status" : [
+    {"field_id": 90651, "field_name": "Automation Status", "field_value": "701", "field_value_name": "Manual - Not Automatable"},
+    {"field_id": 90651, "field_name": "Automation Status", "field_value": "702", "field_value_name": "Manual - Planning (Automatable)"},
+    {"field_id": 90651, "field_name": "Automation Status", "field_value": "703", "field_value_name": "Under Development"},
+    {"field_id": 90651, "field_name": "Automation Status", "field_value": "704", "field_value_name": "Release Pending"},
+    {"field_id": 90651, "field_name": "Automation Status", "field_value": "46816", "field_value_name": "Released"}
+],
+
+"Status" : [
+    {"field_id": 90650, "field_name": "Status", "field_value": "202", "field_value_name": "Ready to Run"},
+    {"field_id": 90650, "field_name": "Status", "field_value": "201", "field_value_name": "In Design"}
+]
+}
+
+
