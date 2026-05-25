@@ -1,0 +1,19 @@
+2026-05-18 16:35:27,256 - INFO - ------------- Start of Script --------------
+2026-05-18 16:35:37,189 - INFO - Details found in vCenter : l5h629047.hop.lab.emc.com
+2026-05-18 16:35:56,766 - INFO -  Fetching the details below ............... 
+2026-05-18 16:35:56,767 - INFO -  List of ESX Hosts for OGH5:
+2026-05-18 16:35:57,128 - INFO -      l5h225084.hop.delllabs.net
+2026-05-18 16:35:57,491 - INFO -      l5h225082.hop.delllabs.net
+2026-05-18 16:35:57,491 - INFO -  List of VMs for OGH5:
+2026-05-18 16:35:57,858 - INFO -      l5h225098.hop.delllabs.net
+2026-05-18 16:35:58,220 - INFO -      l5h225097.hop.delllabs.net
+2026-05-18 16:35:58,584 - INFO -      l5h225091.hop.delllabs.net
+2026-05-18 16:35:58,938 - INFO -      l5h225094.hop.delllabs.net
+2026-05-18 16:35:59,298 - INFO -      l5h225095.hop.delllabs.net
+2026-05-18 16:35:59,651 - INFO -      l5h225096.hop.delllabs.net
+2026-05-18 16:36:00,016 - INFO -      l5h225093.hop.delllabs.net
+2026-05-18 16:36:00,369 - INFO -      l5h225090.hop.delllabs.net
+2026-05-18 16:36:00,722 - INFO -      l5h225089.hop.delllabs.net
+2026-05-18 16:36:01,075 - INFO -      l5h225092.hop.delllabs.net
+2026-05-18 16:36:01,076 - INFO - ------------- Fetching the VM IPs --------------
+2026-05-18 16:36:01,076 - INFO -  Fetching the VM IPs ....
