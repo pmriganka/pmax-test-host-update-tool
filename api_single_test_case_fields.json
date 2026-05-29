@@ -2,23 +2,23 @@
     "links": [
         {
             "rel": "attachments",
-            "href": "http://qtest.gtie.dell.com/api/v3/projects/442/test-cases/5036953/attachments"
+            "href": "http://qtest.gtie.dell.com/api/v3/projects/442/test-cases/5034248/attachments"
         },
         {
             "rel": "self",
-            "href": "http://qtest.gtie.dell.com/api/v3/projects/442/test-cases/5036953"
+            "href": "http://qtest.gtie.dell.com/api/v3/projects/442/test-cases/5034248"
         },
         {
             "rel": "test-steps",
-            "href": "http://qtest.gtie.dell.com/api/v3/projects/442/test-cases/5036953/versions/15788781/test-steps?expand=&showParamIdentifier=false"
+            "href": "http://qtest.gtie.dell.com/api/v3/projects/442/test-cases/5034248/versions/16131883/test-steps?expand=&showParamIdentifier=false"
         }
     ],
-    "id": 5036953,
-    "name": "Test for Glacial compression and dedupe interaction",
-    "order": 47,
-    "pid": "TC-14709",
-    "created_date": "2023-09-07T00:07:28+00:00",
-    "last_modified_date": "2026-02-17T10:18:45+00:00",
+    "id": 5034248,
+    "name": "Read Miss when EDS drop DD",
+    "order": 154,
+    "pid": "TC-13619",
+    "created_date": "2023-09-06T20:11:36+00:00",
+    "last_modified_date": "2026-05-25T14:02:35+00:00",
     "properties": [
         {
             "field_id": 90647,
@@ -38,103 +38,10 @@
             "field_value_name": "Ready to Run"
         },
         {
-            "field_id": 90705,
-            "field_name": "Product",
-            "field_value": "4",
-            "field_value_name": "Enginuity"
-        },
-        {
-            "field_id": 90642,
-            "field_name": "Assigned To",
-            "field_value": "[12507]",
-            "field_value_name": "[Stephen Ngai]"
-        },
-        {
-            "field_id": 90706,
-            "field_name": "Product Area",
-            "field_value": "51",
-            "field_value_name": "SymmUcode"
-        },
-        {
-            "field_id": 90707,
-            "field_name": "Product Component",
-            "field_value": "208",
-            "field_value_name": "Data Reduction and Provisioning"
-        },
-        {
-            "field_id": 90708,
-            "field_name": "Responsible Team",
-            "field_value": "6",
-            "field_value_name": "QTE PMAX Enginuity Services Team"
-        },
-        {
-            "field_id": 149403,
-            "field_name": "Scrum Team",
-            "field_value": "93292",
-            "field_value_name": "Back-End Services"
-        },
-        {
-            "field_id": 90651,
-            "field_name": "Automation Status",
-            "field_value": "703",
-            "field_value_name": "Under Development"
-        },
-        {
-            "field_id": 148626,
-            "field_name": "Frequency",
-            "field_value": "92329",
-            "field_value_name": "High Frequency"
-        },
-        {
-            "field_id": 148627,
-            "field_name": "Test Type",
-            "field_value": "92335",
-            "field_value_name": "System"
-        },
-        {
-            "field_id": 90710,
-            "field_name": "Stand Alone",
-            "field_value": "2",
-            "field_value_name": "No"
-        },
-        {
-            "field_id": 90712,
-            "field_name": "Continuous Test Designation",
-            "field_value": "3",
-            "field_value_name": "Gold"
-        },
-        {
-            "field_id": 90711,
-            "field_name": "Module",
-            "field_value": "",
-            "field_value_name": ""
-        },
-        {
-            "field_id": 90653,
-            "field_name": "Description",
-            "field_value": ""
-        },
-        {
-            "field_id": 90715,
-            "field_name": "MPTC Functional Area",
-            "field_value": "",
-            "field_value_name": ""
-        },
-        {
-            "field_id": 90716,
-            "field_name": "MPTC Handover Status",
-            "field_value": "",
-            "field_value_name": ""
-        },
-        {
-            "field_id": 90717,
-            "field_name": "MPTC Handover Comments",
-            "field_value": ""
-        },
-        {
-            "field_id": 90719,
-            "field_name": "Automation Target Release Date",
-            "field_value": "2026-02-28T00:00:00+00:00"
+            "field_id": 230802,
+            "field_name": "Program Team",
+            "field_value": "215537",
+            "field_value_name": "PowerMax System Test"
         },
         {
             "field_id": 90718,
@@ -143,21 +50,28 @@
             "field_value_name": "SmartBuilder"
         },
         {
-            "field_id": 90721,
-            "field_name": "Level of Automation",
-            "field_value": "1",
-            "field_value_name": "Full"
+            "field_id": 239533,
+            "field_name": "Scrum Team ID",
+            "field_value": "233107",
+            "field_value_name": "PMSL09A"
         },
         {
-            "field_id": 90720,
-            "field_name": "Automation Developer",
-            "field_value": "11557",
-            "field_value_name": "Shama K T"
+            "field_id": 90651,
+            "field_name": "Automation Status",
+            "field_value": "46816",
+            "field_value_name": "Under Development"
         },
         {
-            "field_id": 90722,
-            "field_name": "Automation File Name",
-            "field_value": "a18b1c29-d8e5-41f2-ade2-9f1fda14a7d4/12"
+            "field_id": 90710,
+            "field_name": "Stand Alone",
+            "field_value": "2",
+            "field_value_name": "No"
+        },
+        {
+            "field_id": 149403,
+            "field_name": "Scrum Team",
+            "field_value": "93292",
+            "field_value_name": "Back-End Services"
         },
         {
             "field_id": 90723,
@@ -166,59 +80,72 @@
             "field_value_name": "Executable"
         },
         {
-            "field_id": 90724,
-            "field_name": "Automation File Argument String",
-            "field_value": "-mode $PARM=symcli|sil|symapi$ -dev $dvlist$ -log $log$ -upd $upddev$ -req SB_testId.req -xmlFile SB_testId.xml -errfile SB_testId.rul -minUcodeLevel 5671 -maxUcodeLevel 9999 -skipAdiosDb "
+            "field_id": 90705,
+            "field_name": "Product",
+            "field_value": "4",
+            "field_value_name": "Enginuity"
+        },
+        {
+            "field_id": 90642,
+            "field_name": "Assigned To",
+            "field_value": "[12502]",
+            "field_value_name": "[Mriganka Paul]"
         },
         {
             "field_id": 90725,
             "field_name": "Automation Creation Date",
-            "field_value": "2020-05-12T00:00:00+00:00"
+            "field_value": "2023-07-10T00:00:00+00:00"
         },
         {
-            "field_id": 90726,
-            "field_name": "Automation Last Updated",
-            "field_value": "2026-02-03T18:49:18+00:00"
+            "field_id": 90707,
+            "field_name": "Product Component",
+            "field_value": "210",
+            "field_value_name": "Enginuity Data Services"
+        },
+        {
+            "field_id": 90720,
+            "field_name": "Automation Developer",
+            "field_value": "12502",
+            "field_value_name": "Mriganka Paul"
         },
         {
             "field_id": 90727,
             "field_name": "Automation Release Date",
-            "field_value": ""
+            "field_value": "2023-07-24T00:00:00+00:00"
         },
         {
-            "field_id": 90728,
-            "field_name": "Automation Developer(CAT)",
-            "field_value": "carner2"
+            "field_id": 90706,
+            "field_name": "Product Area",
+            "field_value": "51",
+            "field_value_name": "SymmUcode"
         },
         {
-            "field_id": 90729,
-            "field_name": "Automation Steps",
-            "field_value": "<p><strong>0: Add A1 Counter</strong></p><p>0: General.Symmetrix Operations.Inlines on host [Default Host] on [A_DL0_STD_1]-page(single) -noDelimiter(noDelimiter) -dir(Any EDS) -dirStateRadioButton(Default ANY)  Issuing inline: A1</p><p>&nbsp;</p><p><strong>1: </strong></p><p>1: CG/DG/SG Operations.Storage Group.Remove Device Association on host [Default Host] on [A_DL0_STD_1]</p><p>&nbsp;</p><p><strong>2: </strong></p><p>2: Virtual Provisioning(THIN).Thin Operations.Deallocate Tracks on host [Default Host] on [A_DL0_STD_1]-select(maxRaw) -task(Deallocate All (Data Loss)) -boundPool(boundPool) </p><p>&nbsp;</p><p><strong>3: </strong></p><p>3: General.Symmetrix Error Checking.Get Errors on host [Default Host] on [A_DL0_STD_1]-errors(getAllErrors) -dirs(All Directors) </p><p>&nbsp;</p><p><strong>4: </strong></p><p>4: Plug Ins Module.Generic.Generic Sub-Component.update_adios_git on host [Default Host] on [A_DL0_STD_1]-scriptName(/scripts/generic/update_from_git.py) -master_branch(master_branch) -user_branch_name() </p><p>&nbsp;</p><p><strong>5: </strong></p><p>5: (Disabled)SSH.SSH.Select Target Host on host [Default Host] -currentHost(currentHost) -emcStandardUser(emcStandardUser) -emcStandardPwd(emcStandardPwd) </p><p>&nbsp;</p><p><strong>6: </strong></p><p>6: (Disabled)SSH.SSH.Execute Command on host [Default Host] -fromStepSSHhost(5: Select Target Host) -executeCommand(/usr/adios/contrib/python/bin/python /usr/adios/tools/update_contrib.py plugins) () </p><p>&nbsp;</p><p><strong>7: </strong></p><p>7: {run  test} Plug Ins Module.Generic.Generic Sub-Component.Script Launcher on host [Default Host] on [A_DL0_STD_1]-scriptName(/scripts/generic/sb_plugin_script_launcher.pl) -txtScriptName(/data_services/compression/juniper/TC_172450_Test_for_Glacial_compression_and_dedupe_interaction.py) -optionsNoneRadioButton(optionsNoneRadioButton) </p><p>&nbsp;</p><p><strong>8: </strong></p><p>8: CG/DG/SG Operations.Storage Group.Restore Device Association on host [Default Host] -fromStep(1: Remove Device Association) </p><p>&nbsp;</p><p><strong>9: </strong></p><p>9: General.Symmetrix Error Checking.Get Errors on host [Default Host] on [A_DL0_STD_1]-errors(getAllErrors) -dirs(All Directors) </p><p>&nbsp;</p><p><strong>10: </strong></p><p>10: General.Symmetrix Error Checking.Get Differential Errors on host [Default Host] on [A_DL0_STD_1]-fromStep(3: Get Errors) -fromStep2(9: Get Errors) -noDirs(noDirs) </p><p>&nbsp;</p><p><strong>11: </strong></p><p>11: General.Symmetrix Error Checking.Analyze Errors on host [Default Host] on [A_DL0_STD_1]-fromStep(10: Get Differential Errors) -analyze(specDevList) -rulFileDefault(default) </p><p>&nbsp;</p><p><strong>12: </strong></p><p>12: (Disabled)SSH.SSH.Execute Command on host [Default Host] -fromStepSSHhost(5: Select Target Host) -executeCommand( /emc/carner2/scripts/update_plugins.py -b master) () </p><p>&nbsp;</p><p><strong>13: </strong></p><p>13: General.Device Operations.Poll for No Write Pending on host [Default Host] on [A_DL0_STD_1]-minutes(30) </p><p>&nbsp;</p><p><strong>14: Add A1 Counter</strong></p><p>14: General.Symmetrix Operations.Inlines on host [Default Host] on [A_DL0_STD_1]-page(single) -noDelimiter(noDelimiter) -dir(Any EDS) -dirStateRadioButton(Default ANY)  Issuing inline: A1</p><p>&nbsp;</p>"
+            "field_id": 148627,
+            "field_name": "Test Type",
+            "field_value": "92335",
+            "field_value_name": "System"
         },
         {
-            "field_id": 92639,
-            "field_name": "Test Variables",
-            "field_value": "CT=yes"
+            "field_id": 90726,
+            "field_name": "Automation Last Updated",
+            "field_value": "2026-05-14T22:00:32+00:00"
         },
         {
-            "field_id": 90731,
-            "field_name": "Prime Tester(CAT)",
-            "field_value": "deshpm"
+            "field_id": 148626,
+            "field_name": "Frequency",
+            "field_value": "92330",
+            "field_value_name": "Medium Frequency"
         },
         {
-            "field_id": 90732,
-            "field_name": "Feature(CAT)",
-            "field_value": "(PF-5645) Improved (3.5:1) Data Reduction"
+            "field_id": 90719,
+            "field_name": "Automation Target Release Date",
+            "field_value": "2026-06-30T00:00:00+00:00"
         },
         {
-            "field_id": 90733,
-            "field_name": "CAT ID",
-            "field_value": "172450"
-        },
-        {
-            "field_id": 90734,
-            "field_name": "Test Comment Consolidated",
-            "field_value": "<p>&lt;&lt;&lt;Continuous Testing&gt;&gt;&gt;</p>"
+            "field_id": 90721,
+            "field_name": "Level of Automation",
+            "field_value": "1",
+            "field_value_name": "Full"
         },
         {
             "field_id": 176876,
@@ -227,35 +154,53 @@
             "field_value_name": ""
         },
         {
+            "field_id": 90722,
+            "field_name": "Automation File Name",
+            "field_value": "3798f4e1-5636-4c3f-9be2-0d1326eb30f4/31"
+        },
+        {
+            "field_id": 220290,
+            "field_name": "System Test Pillars",
+            "field_value": "[207548]",
+            "field_value_name": "[Stress]"
+        },
+        {
             "field_id": 176877,
             "field_name": "System Requirements",
             "field_value": "",
             "field_value_name": ""
         },
         {
-            "field_id": 220290,
-            "field_name": "System Test Pillars",
-            "field_value": "[207547]",
-            "field_value_name": "[Non-deterministic]"
+            "field_id": 90724,
+            "field_name": "Automation File Argument String",
+            "field_value": "-mode $PARM=symcli|sil|symapi$ -dev $dvlist$ -log $log$ -upd $upddev$ -req SB_testId.req -xmlFile SB_testId.xml -errfile SB_testId.rul -minUcodeLevel 5671 -maxUcodeLevel 9999 "
         },
         {
-            "field_id": 230802,
-            "field_name": "Program Team",
-            "field_value": "",
-            "field_value_name": ""
+            "field_id": 90653,
+            "field_name": "Description",
+            "field_value": "<p>This test validates compression and deduplication with quarter compression patterns\u00a0and director failure simulation. It disables DCB, writes data with\u00a0various compression/dedup ratios (4K-16K-4K-16K, 12K-24K-12K-24K, 8:1, random), drops an EM director to DD to simulate failure, clears cache, verifies data integrity through read operations, recovers the director, runs CBNK scan, and performs comprehensive error checking.</p>"
         },
         {
-            "field_id": 239533,
-            "field_name": "Scrum Team ID",
-            "field_value": "233107",
-            "field_value_name": "PMSL09A"
+            "field_id": 90729,
+            "field_name": "Automation Steps",
+            "field_value": "<p><strong>0: </strong></p><p>0: General.Symmetrix Operations.Install SWAT on host [Default Host] on [A_test1_STD_1]-both(both) </p><p>&nbsp;</p><p><strong>1: sdf</strong></p><p>1: {Disable DCB} General.Symmetrix Operations.Inlines (with variables) on host [Default Host] on [A_test1_STD_1]-delay(0) -page(single) -noDelimiter(noDelimiter) -retryCodes(0) -retryInterval(0) -maxRetries(0) -dir(Any EM) -dirStateRadioButton(Online) -default(default)  Issuing inline: 80,DCB,CTRL,DSBL</p><p>&nbsp;</p><p><strong>2: sdf</strong></p><p>2: {Early exit from active conversion} (Disabled)General.Symmetrix Operations.Inlines (with variables) on host [Default Host] on [A_test1_STD_1]-delay(0) -page(single) -noDelimiter(noDelimiter) -retryCodes(0) -retryInterval(0) -maxRetries(0) -dir(Any EM) -dirStateRadioButton(Online) -default(default)  Issuing inline: 65,CSEG,PLCY,EXIT,SET</p><p>&nbsp;</p><p><strong>3: </strong></p><p>3: General.Symmetrix Error Checking.Get Errors on host [Default Host] on [A_test1_STD_1]-errors(getAllErrors) -dirs(All Directors) </p><p>&nbsp;</p><p><strong>4: </strong></p><p>4: General.Miscellaneous.Merge Device Lists on host [Default Host] -devListsToMerge(A_test1_STD_1+A_test2_STD_1+A_parallel1_STD_1+A_parallel2_STD_1) -addLabel(all_tdevs) -sortNa(None) </p><p>&nbsp;</p><p><strong>5: </strong></p><p>5: {Random Extent Comp 4k-16k-4k-16k dedup 3:1} IO.IO.Write With Compression on host [Default Host] on [A_test1_STD_1]-pattern(AAAA) -writeMode(Random) -extent(random) -minPercent(0) -maxPercent(100) -blockSize(128) -skip(0) -ioTime(once) -readPercent(0) -respInterval(5) -ioMethod(Default) -quarterCompression(4K) (16K) (4K) (16K) -dedupRatio(3:1) -dedupRatioOptions(Use same ratio across device lists) -dedupTrackOptions(Randomize tracks across device lists) -dedupWorkloadOptions(Random workload) -retryOnFailureNo(No) -saveTrackData(Save track data) -startBlockNa(none) -numOfBlocksNa(none) </p><p>&nbsp;</p><p><strong>6: </strong></p><p>6: {Random Extent Comp 12k-24k-12k-24k dedup 3:1} IO.IO.Write With Compression on host [Default Host] on [A_test2_STD_1]-pattern(9999) -writeMode(Random) -extent(random) -minPercent(0) -maxPercent(100) -blockSize(128) -skip(0) -ioTime(once) -readPercent(0) -respInterval(5) -ioMethod(Default) -quarterCompression(12K) (24K) (12K) (24K) -dedupRatioCustom(5) -dedupRatioOptions(Use same ratio across device lists) -dedupTrackOptions(Randomize tracks across device lists) -dedupWorkloadOptions(Random workload) -retryOnFailureNo(No) -saveTrackData(Save track data) -startBlockNa(none) -numOfBlocksNa(none) </p><p>&nbsp;</p><p><strong>7: </strong></p><p>7: General.Device Operations.Poll for No Write Pending on host [Default Host] on [A_test1_STD_1]-default(default) </p><p>&nbsp;</p><p><strong>8: </strong></p><p>8: General.Device Operations.Poll for No Write Pending on host [Default Host] on [A_test2_STD_1]-default(default) </p><p>&nbsp;</p><p><strong>9: </strong></p><p>9: {Rndm extnt conp 50%write 50%read 8:1 cmp 3:1 dedup} IO.IO.Write With Compression on host [Default Host] on [A_parallel1_STD_1]-noPoll -pattern(5555) -writeMode(Random) -extent(random) -minPercent(0) -maxPercent(100) -blockSize(5) (512) -skip2(0) (1024) -ioTime(continues) -readPercent(50) -respInterval(5) -ioMethod(Default) -compressRatio(8:1) -dedupRatio(3:1) -dedupRatioOptions(Randomize ratio across device lists) -dedupTrackOptions(Randomize tracks across device lists) -dedupWorkloadOptions(Random workload) -retryOnFailureNo(No) -saveTrackData(Save track data) -startBlockNa(none) -numOfBlocksNa(none) </p><p>&nbsp;</p><p><strong>10: </strong></p><p>10: {Rndm extnt conp 50%write 50%read Ran cmp Ran dedup} IO.IO.Write With Compression on host [Default Host] on [A_parallel2_STD_1]-noPoll -pattern(AA55) -writeMode(Random) -extent(random) -minPercent(0) -maxPercent(100) -blockSize(5) (256) -skip2(0) (256) -ioTime(continues) -readPercent(50) -respInterval(5) -ioMethod(Default) -compressRatio(Random compression ratio per track) -dedupRatio(Random) -dedupRatioOptions(Use same ratio across device lists) -dedupTrackOptions(Randomize tracks across device lists) -dedupWorkloadOptions(Random workload) -retryOnFailureNo(No) -saveTrackData(Save track data) -startBlockNa(none) -numOfBlocksNa(none) </p><p>&nbsp;</p><p><strong>11: tret</strong></p><p>11: General.Miscellaneous.Wait(Sleep) on host [Default Host] -hours() -minutes(15) -seconds() </p><p>&nbsp;</p><p><strong>12: </strong></p><p>12: Director Operations.Directors.Pick Director on host [Default Host] on [A_test1_STD_1]-directorType(EM) -state(ANY) -None(yes) -gosAny(gosAny) </p><p>&nbsp;</p><p><strong>13: </strong></p><p>13: Symmwin(Adios FAST) Utilities.Director.Set Director DD on host [Default Host] on [A_test1_STD_1]-fromStepTrk(12: Pick Director) -defaultInline(defaultInline) </p><p>&nbsp;</p><p><strong>14: ad</strong></p><p>14: General.Miscellaneous.Wait(Sleep) on host [Default Host] -hours() -minutes(15) -seconds() </p><p>&nbsp;</p><p><strong>15: Clear cache using inlines</strong></p><p>15: {Clear cache using inliones} General.Symmetrix Operations.Inlines (with variables) on host [Default Host] on [A_test1_STD_1]-delay(0) -page(single) -noDelimiter(noDelimiter) -retryCodes(0) -retryInterval(0) -maxRetries(0) -dir(Any EM) -dirStateRadioButton(Online) -default(default)  Issuing inline: 98,SCAN,CACH,CFRE,ALLD</p><p>&nbsp;</p><p><strong>16: </strong></p><p>16: {Clear cache with syscalls} (Disabled)General.Symmetrix Operations.Clear Cache on host [Default Host] on [all_tdevs]-clearOption(devices) </p><p>&nbsp;</p><p><strong>17: ad</strong></p><p>17: General.Miscellaneous.Wait(Sleep) on host [Default Host] -hours() -minutes(5) -seconds() </p><p>&nbsp;</p><p><strong>18: </strong></p><p>18: IO.IO.Read verify on host [Default Host] on [A_test1_STD_1]-fromStep(5: Write With Compression) -respInterval(5) -retryOnFailureNo(No) </p><p>&nbsp;</p><p><strong>19: </strong></p><p>19: IO.IO.Read verify on host [Default Host] on [A_test2_STD_1]-fromStep(6: Write With Compression) -respInterval(5) -retryOnFailureNo(No) </p><p>&nbsp;</p><p><strong>20: ad</strong></p><p>20: General.Miscellaneous.Wait(Sleep) on host [Default Host] -hours() -minutes(15) -seconds() </p><p>&nbsp;</p><p><strong>21: </strong></p><p>21: Symmwin(Adios FAST) Utilities.Director.Recover DD Director on host [Default Host] on [A_test1_STD_1]-fromStep(13: Set Director DD) </p><p>&nbsp;</p><p><strong>22: ad</strong></p><p>22: General.Miscellaneous.Wait(Sleep) on host [Default Host] -hours() -minutes(30) -seconds() </p><p>&nbsp;</p><p><strong>23: </strong></p><p>23: IO.IO.Poll on host [Default Host] -fromStep(9: Write With Compression) -wait(stopInstantly) </p><p>&nbsp;</p><p><strong>24: </strong></p><p>24: IO.IO.Poll on host [Default Host] -fromStep(10: Write With Compression) -wait(stopInstantly) </p><p>&nbsp;</p><p><strong>25: </strong></p><p>25: General.Device Operations.Poll for No Write Pending on host [Default Host] on [A_parallel1_STD_1]-default(default) </p><p>&nbsp;</p><p><strong>26: </strong></p><p>26: General.Device Operations.Poll for No Write Pending on host [Default Host] on [A_parallel2_STD_1]-default(default) </p><p>&nbsp;</p><p><strong>27: sdf</strong></p><p>27: {Enable DCB} General.Symmetrix Operations.Inlines (with variables) on host [Default Host] on [A_test1_STD_1]-delay(0) -page(single) -noDelimiter(noDelimiter) -retryCodes(0) -retryInterval(0) -maxRetries(0) -dir(Any EM) -dirStateRadioButton(Online) -default(default)  Issuing inline: 80,DCB,CTRL,ENBL</p><p>&nbsp;</p><p><strong>28: </strong></p><p>28: General.Symmetrix Error Checking.Get Errors on host [Default Host] on [A_test1_STD_1]-errors(getAllErrors) -dirs(All Directors) </p><p>&nbsp;</p><p><strong>29: </strong></p><p>29: General.Symmetrix Error Checking.Get Differential Errors on host [Default Host] on [A_test1_STD_1]-fromStep(3: Get Errors) -fromStep2(28: Get Errors) -noDirs(noDirs) </p><p>&nbsp;</p><p><strong>30: </strong></p><p>30: General.Symmetrix Error Checking.Analyze Errors on host [Default Host] on [A_test1_STD_1]-fromStep(29: Get Differential Errors) -analyze(all) -rulFileDefault(default) </p><p>&nbsp;</p><p><strong>31: ad</strong></p><p>31: General.Miscellaneous.Wait(Sleep) on host [Default Host] -hours() -minutes(2) -seconds() </p><p>&nbsp;</p><p><strong>32: </strong></p><p>32: DA Operations.SCAN (THICK/TDAT) Devices.Start EDS Cache Scan on host [Default Host] on [A_CBNK_STD_1]-cacheScanType(CBNK) -deviceRequest(executeScanOnDevice) -devType(TDEV) </p><p>&nbsp;</p><p><strong>33: </strong></p><p>33: DA Operations.SCAN (THICK/TDAT) Devices.Poll EDS Scan State on host [Default Host] on [A_CBNK_STD_1]-fromStep(32: Start EDS Cache Scan) -stateToPoll(FINISHED) -pollTimeout(3) (Hours) -pollInterval(30) (Seconds) </p><p>&nbsp;</p><p><strong>34: </strong></p><p>34: General.Symmetrix Error Checking.Get Errors on host [Default Host] on [A_CBNK_STD_1]-errors(getAllErrors) -dirs(All Directors) </p><p>&nbsp;</p><p><strong>35: </strong></p><p>35: General.Symmetrix Error Checking.Get Differential Errors on host [Default Host] on [A_CBNK_STD_1]-fromStep(28: Get Errors) -fromStep2(34: Get Errors) -noDirs(noDirs) </p><p>&nbsp;</p><p><strong>36: </strong></p><p>36: General.Symmetrix Error Checking.Define Custom RUL File on host [Default Host] -errors(XX.7A80.XX:X:1|SKIP-XX.4BBA.XX:X:1|SKIP-XX.XX68.XX:X:1|SKIP-XX.0471.XX:X:1|SKIP-30.8B10.36:X:1|SKIP-91.B93E.XX:X:1|SKIP-XX.XXXX.XX:1:1|STOP-XX.XXXX.XX:2:1|STOP) </p><p>&nbsp;</p><p><strong>37: </strong></p><p>37: General.Symmetrix Error Checking.Analyze Errors on host [Default Host] on [A_CBNK_STD_1]-fromStep(35: Get Differential Errors) -analyze(all) -fromStepCustomRulFile(36: Define Custom RUL File) </p><p>&nbsp;</p><p><strong>38: sdf</strong></p><p>38: {Enable DCB} General.Symmetrix Operations.Inlines (with variables) on host [Default Host] on [A_test1_STD_1]-delay(0) -page(single) -noDelimiter(noDelimiter) -retryCodes(0) -retryInterval(0) -maxRetries(0) -dir(Any EM) -dirStateRadioButton(Online) -default(default)  Issuing inline: 80,DCB,CTRL,ENBL</p><p>&nbsp;</p><p><strong>39: </strong></p><p>39: Symmwin(Adios FAST) Utilities.Director.Recover DD Director on host [Default Host] on [A_test1_STD_1]-allDirectors(ALL) </p><p>&nbsp;</p><p><strong>40: </strong></p><p>40: IO.IO.Stop All Active IOs Instantly on host [Default Host] on [A_parallel1_STD_1]</p><p>&nbsp;</p><p><strong>41: </strong></p><p>41: IO.IO.Stop All Active IOs Instantly on host [Default Host] on [A_parallel2_STD_1]</p><p>&nbsp;</p><p><strong>42: </strong></p><p>42: General.Device Operations.Poll for No Write Pending on host [Default Host] on [all_tdevs]-default(default) </p><p>&nbsp;</p>"
+        },
+        {
+            "field_id": 90734,
+            "field_name": "Test Comment Consolidated",
+            "field_value": "<p>&lt;&lt;&lt;Legacy A&gt;&gt;&gt;</p>"
+        },
+        {
+            "field_id": 92639,
+            "field_name": "Test Variables",
+            "field_value": "[{\"Name\":\"RUN_TIMEOUT\",\"Value\":\"72\"}]"
         }
     ],
-    "web_url": "https://qtest.gtie.dell.com/p/442/portal/project#tab=testdesign&object=1&id=5036953",
-    "parent_id": 1069330,
-    "test_case_version_id": 15788781,
-    "version": "15.7",
-    "description": "",
+    "web_url": "https://qtest.gtie.dell.com/p/442/portal/project#tab=testdesign&object=1&id=5034248",
+    "parent_id": 1104617,
+    "test_case_version_id": 16131883,
+    "version": "11.12",
+    "description": "<p>This test validates compression and deduplication with quarter compression patterns\u00a0and director failure simulation. It disables DCB, writes data with\u00a0various compression/dedup ratios (4K-16K-4K-16K, 12K-24K-12K-24K, 8:1, random), drops an EM director to DD to simulate failure, clears cache, verifies data integrity through read operations, recovers the director, runs CBNK scan, and performs comprehensive error checking.</p>",
     "precondition": "",
     "creator_id": 3538,
     "agent_ids": []

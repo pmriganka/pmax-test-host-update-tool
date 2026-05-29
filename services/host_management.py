@@ -142,71 +142,74 @@ class HostManagement:
         return all_details
     
     def get_vm_ip(self, vms):
-        
-        logging.info("------------- Fetching the VM IPs --------------")
-        single_vm = {}
-        vm_details = []
 
-        # entity = self.get_container_view(content, content.rootFolder)
+        logging.info("------------- Fetching the VM IPs --------------")
+
+        # If any VMs are powered off, power them on first so we can fetch their IPs
+        off_vms = [vm for vm in vms if vm.runtime.powerState != vim.VirtualMachinePowerState.poweredOn]
+        if off_vms:
+            logging.info(f" {len(off_vms)} VM(s) are not powered on. Powering them on to fetch IPs...")
+            self.power_on_vms(off_vms)
+
         logging.info(" Fetching the VM IPs ....")
+        vm_details = []
+        ip_wait_deadline = 300  # seconds per VM to wait for an IP after power-on
+
         for vm in vms:
-            single_vm = {
-                        "vm" : vm,
-                        "vm_ip" : vm.guest.ipAddress
-                    }
-            vm_details.append(single_vm)                
-        
+            ip = None
+            try:
+                ip = vm.guest.ipAddress
+            except Exception:
+                ip = None
+
+            # If the VM was just powered on, give it time to report an IP via VMware Tools
+            if ip is None and vm.runtime.powerState == vim.VirtualMachinePowerState.poweredOn:
+                end_time = time.time() + ip_wait_deadline
+                while time.time() < end_time:
+                    self._check_stop()
+                    try:
+                        ip = vm.guest.ipAddress
+                    except Exception:
+                        ip = None
+                    if ip:
+                        break
+                    time.sleep(10)
+
+            logging.info(f"     {vm.name} -> {ip}")
+            vm_details.append({"vm": vm, "vm_ip": ip})
+
         return vm_details
 
-    def get_vm_credentials(self, vm_detials):
-
-        logging.info(" Fetching the credentials for the VMs .....")
-        
-        vm_details_with_login = []
-        username = "root"
-        passwords = ['dangerous', 'D@ngerous', 'D@nger0us1']
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
-        for item in vm_detials:
-            hostname = item['vm_ip']
-            
-            for password in passwords:
-                ssh = paramiko.SSHClient()  # Create a new SSHClient object
-                ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
-                try:
-                    ssh.connect(hostname, username=username, password=password)
-                    item['username'] = username
-                    item['password'] = password
-                    vm_details_with_login.append(item)
-                    logging.info(f"Credentials found for {item['vm_name']} : {username} : {password}")
-                    break
-                except paramiko.ssh_exception.AuthenticationException:
-                    continue
-                finally:
-                    ssh.close()  # Close the SSHClient object
-
-        return vm_details_with_login        
-            
-    def power_off_vms( self, vms ):
-        
-        logging.info("------------- Powering Off the VMs --------------")
-        for vm in vms:
-            
-            # Skip if already off
+    def _power_off_single_vm(self, vm):
+        try:
             if vm.runtime.powerState == vim.VirtualMachinePowerState.poweredOff:
                 logging.info(f"{vm.name} is already powered off.")
-            else:    
-                logging.info(f" Powering off {vm.name} (hard)...")
-                task = vm.PowerOffVM_Task()
-                while task.info.state in [vim.TaskInfo.State.running, vim.TaskInfo.State.queued]:
-                    self._check_stop()
-                    time.sleep(15)
-                if task.info.state == "success":
-                    logging.info(f"{vm.name} powered off.")
-                else:
-                    logging.error(task.info.error)
+                return
+            logging.info(f" Powering off {vm.name} (hard)...")
+            task = vm.PowerOffVM_Task()
+            while task.info.state in [vim.TaskInfo.State.running, vim.TaskInfo.State.queued]:
+                self._check_stop()
+                time.sleep(5)
+            if task.info.state == vim.TaskInfo.State.success:
+                logging.info(f"🟢 {vm.name} powered off.")
+            else:
+                logging.error(f"Failed to power off {vm.name}: {task.info.error}")
+        except ScriptStoppedException:
+            raise
+        except Exception as e:
+            logging.error(f"Error powering off {vm.name}: {e}")
+
+    def power_off_vms( self, vms ):
+
+        logging.info("------------- Powering Off the VMs --------------")
+        threads = []
+        for vm in vms:
+            t = threading.Thread(target=self._power_off_single_vm, args=(vm,))
+            t.daemon = True
+            t.start()
+            threads.append(t)
+        for t in threads:
+            t.join()
          
     def enter_maintainence_mode( self, content, hosts ):
         
@@ -223,7 +226,7 @@ class HostManagement:
                             logging.info( "Waiting.....", task.info.progress )
                             time.sleep(5)
                         if task.info.state == vim.TaskInfo.State.success:
-                            logging.info(f"Host {host.name} in maintenance mode")
+                            logging.info(f"🟢 Host {host.name} in maintenance mode")
                         else:
                             logging.error(f"Failed to enter maintenance mode on host: {task.info.error}")
                     else:
@@ -271,7 +274,7 @@ class HostManagement:
                             ps = child.summary.runtime.powerState
                             logging.info(f"[WaitUp] connectionState={cs}, powerState={ps}")
                             if str(cs).lower() == "connected":
-                                logging.info(f"Host {host.name} is connected")
+                                logging.info(f"🟢 Host {host.name} is connected")
                                 break
                         except Exception as e:
                             logging.error("Exception occured: " + str(e))
@@ -293,7 +296,7 @@ class HostManagement:
                             logging.info( "Waiting.....", task.info.progress )
                             time.sleep(5)
                         if task.info.state == vim.TaskInfo.State.success:
-                            logging.info(f"Host {host.name} is Not in maintenance mode")
+                            logging.info(f"🟢 Host {host.name} is Not in maintenance mode")
                         else:
                             logging.error(f"Failed to exit maintenance mode on host: {task.info.error}")
                     else:
@@ -301,23 +304,36 @@ class HostManagement:
 
         container.Destroy()
 
+    def _power_on_single_vm(self, vm):
+        try:
+            if vm.runtime.powerState == vim.VirtualMachinePowerState.poweredOn:
+                logging.info(f" {vm.name} is already powered on.")
+                return
+            logging.info(f" Powering on {vm.name}...")
+            task = vm.PowerOnVM_Task()
+            while task.info.state in [vim.TaskInfo.State.running, vim.TaskInfo.State.queued]:
+                self._check_stop()
+                time.sleep(5)
+            if task.info.state == vim.TaskInfo.State.success:
+                logging.info(f"🟢 {vm.name} powered on.")
+            else:
+                logging.error(f"Failed to power on {vm.name}: {task.info.error}")
+        except ScriptStoppedException:
+            raise
+        except Exception as e:
+            logging.error(f"Error powering on {vm.name}: {e}")
+
     def power_on_vms( self, vms ):
 
         logging.info("------------- Powering on the VMs  --------------")
+        threads = []
         for vm in vms:
-         
-            if vm.runtime.powerState == vim.VirtualMachinePowerState.poweredOn:
-                    logging.info(f" {vm.name} is already powered on.")
-            else:
-                logging.info(f" Powering on {vm.name}...")
-                task = vm.PowerOnVM_Task()
-                while task.info.state in [vim.TaskInfo.State.running, vim.TaskInfo.State.queued]:
-                    self._check_stop()
-                    time.sleep(15)
-                if task.info.state == "success":
-                    logging.info(f"{vm.name} powered on.")
-                else:
-                    logging.error(task.info.error)      
+            t = threading.Thread(target=self._power_on_single_vm, args=(vm,))
+            t.daemon = True
+            t.start()
+            threads.append(t)
+        for t in threads:
+            t.join()      
     def wait_for_vm_console_ready(self, vm_details):
         
         logging.info("------------- Waiting for the console to be Ready  --------------")
@@ -336,7 +352,7 @@ class HostManagement:
                     try:
                         result = subprocess.run(["ping", ping_count_param, "1", item['vm_ip']], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                         if result.returncode == 0:
-                            logging.info(f"VM {host_name} is ready")
+                            logging.info(f"🟢 VM {host_name} is ready")
                             break
                     except:
                         logging.info(f"VM {host_name} is Not Yet ready")            
@@ -362,29 +378,44 @@ class HostManagement:
             new_entry = {}
             
             if item['vm_ip'] is not None:
+                credentials_found = False
                 for password in passwords:
                     ssh = paramiko.SSHClient()  # Create a new SSHClient object
                     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
                     try:
-                        ssh.connect(host_ip, username=username, password=password)
+                        ssh.connect(host_ip, username=username, password=password, timeout=10)
                         new_entry['hostname'] = host_name
                         new_entry['hostip'] = host_ip
                         new_entry['username'] = username
                         new_entry['password'] = password
                         vm_details_with_login.append(new_entry)
-                        logging.info(f"Credentials found for {host_name} : {username} : {password}")
+                        logging.info(f"🟢 Credentials found for {host_name} : {username} : {password}")
+                        credentials_found = True
                         break
                     except paramiko.ssh_exception.AuthenticationException:
                         continue
+                    except (paramiko.SSHException, OSError, Exception) as e:
+                        logging.warning(f"🟡 Cannot connect to {host_name} ({host_ip}): {str(e)}")
+                        break  # Stop trying other passwords if connection fails
                     finally:
                         ssh.close()  # Close the SSHClient object
+                
+                if not credentials_found:
+                    # Add entry with no credentials if we couldn't connect or authenticate
+                    new_entry['hostname'] = host_name
+                    new_entry['hostip'] = host_ip
+                    new_entry['username'] = None
+                    new_entry['password'] = None
+                    vm_details_with_login.append(new_entry)
+                    logging.warning(f"🟡 No credentials found for {host_name} ({host_ip})")
             else:
                 new_entry['hostname'] = host_name
                 new_entry['hostip'] = host_ip
                 new_entry['username'] = None
                 new_entry['password'] = None
                 vm_details_with_login.append(new_entry)
+                logging.info(f"🟡 No IP available for {host_name}")
 
         return vm_details_with_login    
     def set_up_aclx(self, vm_details_with_login, hostname, script_name):
@@ -393,15 +424,37 @@ class HostManagement:
         hostname = hostname.lower()
         hostip = username = password = None
         exit_status = 0
+        
+        # Try to find the VM by matching hostname
         for item in vm_details_with_login:
-            if hostname in item['hostname']:
+            vm_name = item['hostname'].lower()
+            # Check if the provided hostname matches the VM name or is contained in it
+            if hostname in vm_name or vm_name in hostname:
                 hostip = item['hostip']
                 username = item['username']
                 password = item['password']
+                logging.info(f"Found matching VM: {item['hostname']} with IP: {hostip}")
                 break
+        
+        # If no match found by name, use the first VM with valid credentials
+        if hostip is None:
+            for item in vm_details_with_login:
+                if item['hostip'] and item['username'] and item['password']:
+                    hostip = item['hostip']
+                    username = item['username']
+                    password = item['password']
+                    logging.warning(f"🟡 No VM matched hostname '{hostname}', using first available VM: {item['hostname']} ({hostip})")
+                    break
+        
+        # Check if we have valid connection details
+        if not hostip or not username or not password:
+            logging.error(f"🔴 Cannot configure ACLX: No valid VM found for hostname '{hostname}' or no VMs have valid credentials")
+            return
+            
         try:
             client = paramiko.client.SSHClient()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            logging.info(f"Connecting to {hostip} as {username} for ACLX configuration...")
             client.connect(hostip, username=username, password=password)
             
             logging.info("Starting the aclx restore script.....")
@@ -422,7 +475,7 @@ class HostManagement:
                 error = _stderr.read().decode()
                 exit_status = _stdout.channel.recv_exit_status()                    
             if exit_status == 0:
-                logging.info(f"Aclx DB file restore is successful for host {hostname}")
+                logging.info(f"🟢 Aclx DB file restore is successful for host {hostname}")
         except Exception as e:
             logging.error(f"Error Occurred during aclx db restore : {e}")
         finally:
@@ -477,7 +530,7 @@ class HostManagement:
                 stdin, stdout, stderr = ssh.exec_command("axcli state | grep STATE | awk 'NR==1'")
                 output = stdout.read().decode()
                 if "DNR" in output:
-                    logging.info(f"Dispatcher set to Not Ready for {hostname}")
+                    logging.info(f"🟢 Dispatcher set to Not Ready for {hostname}")
                     break
                 time.sleep(1)
         
@@ -488,7 +541,7 @@ class HostManagement:
             stdin, stdout, stderr = ssh.exec_command(f"/usr/adios/axinstall -b {release}")
             exit_status = stdout.channel.recv_exit_status()
             if exit_status == 0:
-                logging.info(f"Adios has been Updated for host {hostname}")
+                logging.info(f"🟢 Adios has been Updated for host {hostname}")
             else:
                 logging.info("Error Occurred : {}".format(exit_status))
         
@@ -498,7 +551,7 @@ class HostManagement:
         stdin, stdout, stderr = ssh.exec_command("axcli adiosx config")
         exit_status = stdout.channel.recv_exit_status()
         if exit_status == 0:
-            logging.info(f"Dispatcher configured for host {hostname}. Polling for Final REady State........")
+            logging.info(f"🟢 Dispatcher configured for host {hostname}. Polling for Final REady State........")
         else:
             logging.info("Error Occurred : {}".format(exit_status))
 
@@ -507,7 +560,7 @@ class HostManagement:
             stdin, stdout, stderr = sec_ssh.exec_command("axcli state | grep STATE | awk 'NR==1'")
             output = stdout.read().decode()
             if "Ready" in output:
-                logging.info(f"{hostname} is Ready")
+                logging.info(f"🟢 {hostname} is Ready")
                 break
             time.sleep(1)
 
@@ -605,6 +658,22 @@ class HostManagement:
             if found == 1:
 
                 self._check_stop()
+
+                # Deduplicate hosts by name: a standalone ESX host can appear in matched_hosts
+                # as BOTH a vim.ComputeResource and a vim.HostSystem (same .name). Prefer HostSystem.
+                _unique_hosts = {}
+                for _h in matched_hosts:
+                    if _h.name not in _unique_hosts or isinstance(_h, vim.HostSystem):
+                        _unique_hosts[_h.name] = _h
+                matched_hosts = list(_unique_hosts.values())
+
+                # Deduplicate VMs by name as a safety net
+                _unique_vms = {}
+                for _vm in matched_vms:
+                    if _vm.name not in _unique_vms:
+                        _unique_vms[_vm.name] = _vm
+                matched_vms = list(_unique_vms.values())
+
                 logging.info(" Fetching the details below ............... ")
                 logging.info(" List of ESX Hosts for " + boxname + ":")
                 for item in matched_hosts:
