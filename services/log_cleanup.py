@@ -1,12 +1,12 @@
 import os
 import time
 from datetime import datetime, timedelta
-import logging
 
 class LogCleanup:
     def __init__(self, log_dir="Logs"):
         self.log_dir = log_dir
-        self.max_age_hours = 24  # Delete logs older than 24 hours
+        self.max_age_days = 5  # Delete logs older than 5 days
+        self.max_age_hours = self.max_age_days * 24  # Convert to hours
         
     def get_log_age_hours(self, file_path):
         """Get the age of a log file in hours."""
@@ -20,7 +20,7 @@ class LogCleanup:
             return 0
     
     def get_old_logs(self):
-        """Get list of log files older than 24 hours."""
+        """Get list of log files older than 5 days."""
         old_logs = []
         
         if not os.path.exists(self.log_dir):
@@ -42,7 +42,7 @@ class LogCleanup:
         return sorted(old_logs, key=lambda x: x['age_hours'], reverse=True)
     
     def delete_old_logs(self):
-        """Delete log files older than 24 hours."""
+        """Delete log files older than 5 days. Silently skips locked or inaccessible files."""
         deleted_logs = []
         failed_deletions = []
         
@@ -52,10 +52,9 @@ class LogCleanup:
             try:
                 os.remove(log_info['path'])
                 deleted_logs.append(log_info)
-                logging.info(f"Deleted old log file: {log_info['name']} (Age: {log_info['age_hours']:.1f} hours)")
             except Exception as e:
+                # Silently skip files that are locked or inaccessible
                 failed_deletions.append({'log': log_info, 'error': str(e)})
-                logging.error(f"Failed to delete log file {log_info['name']}: {str(e)}")
         
         return deleted_logs, failed_deletions
     
@@ -82,9 +81,9 @@ class LogCleanup:
             warning_message = f"""
             ⚠️ **CAUTION: Log Cleanup Required**
             
-            📊 **Found {stats['old_logs_count']} log file(s) older than 24 hours**
+            📊 **Found {stats['old_logs_count']} log file(s) older than {self.max_age_days} days**
             💾 **Total size to be deleted: {stats['total_size_mb']:.2f} MB**
-            🕐 **Oldest log: {stats['oldest_age_hours']:.1f} hours old**
+            🕐 **Oldest log: {stats['oldest_age_hours']/24:.1f} days old**
             
             🗑️ **These logs will be automatically deleted to save space.**
             """
