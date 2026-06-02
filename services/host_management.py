@@ -1,6 +1,7 @@
 
 import os
 import json
+import random
 from dotenv import load_dotenv
 from datetime import datetime
 from pyVmomi import vim
@@ -13,6 +14,7 @@ from pyVmomi import vim
 import ssl
 import subprocess
 import tempfile
+import socket
 import atexit
 import threading
 from services.host_remediation import host_remediation
@@ -191,7 +193,7 @@ class HostManagement:
                 self._check_stop()
                 time.sleep(5)
             if task.info.state == vim.TaskInfo.State.success:
-                logging.info(f"🟢 {vm.name} powered off.")
+                logging.info(f"{vm.name} powered off.")
             else:
                 logging.error(f"Failed to power off {vm.name}: {task.info.error}")
         except ScriptStoppedException:
@@ -226,7 +228,7 @@ class HostManagement:
                             logging.info( "Waiting.....", task.info.progress )
                             time.sleep(5)
                         if task.info.state == vim.TaskInfo.State.success:
-                            logging.info(f"🟢 Host {host.name} in maintenance mode")
+                            logging.info(f"Host {host.name} in maintenance mode")
                         else:
                             logging.error(f"Failed to enter maintenance mode on host: {task.info.error}")
                     else:
@@ -274,7 +276,7 @@ class HostManagement:
                             ps = child.summary.runtime.powerState
                             logging.info(f"[WaitUp] connectionState={cs}, powerState={ps}")
                             if str(cs).lower() == "connected":
-                                logging.info(f"🟢 Host {host.name} is connected")
+                                logging.info(f"Host {host.name} is connected")
                                 break
                         except Exception as e:
                             logging.error("Exception occured: " + str(e))
@@ -296,7 +298,7 @@ class HostManagement:
                             logging.info( "Waiting.....", task.info.progress )
                             time.sleep(5)
                         if task.info.state == vim.TaskInfo.State.success:
-                            logging.info(f"🟢 Host {host.name} is Not in maintenance mode")
+                            logging.info(f"Host {host.name} is Not in maintenance mode")
                         else:
                             logging.error(f"Failed to exit maintenance mode on host: {task.info.error}")
                     else:
@@ -315,7 +317,7 @@ class HostManagement:
                 self._check_stop()
                 time.sleep(5)
             if task.info.state == vim.TaskInfo.State.success:
-                logging.info(f"🟢 {vm.name} powered on.")
+                logging.info(f"{vm.name} powered on.")
             else:
                 logging.error(f"Failed to power on {vm.name}: {task.info.error}")
         except ScriptStoppedException:
@@ -352,7 +354,7 @@ class HostManagement:
                     try:
                         result = subprocess.run(["ping", ping_count_param, "1", item['vm_ip']], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                         if result.returncode == 0:
-                            logging.info(f"🟢 VM {host_name} is ready")
+                            logging.info(f"VM {host_name} is ready")
                             break
                     except:
                         logging.info(f"VM {host_name} is Not Yet ready")            
@@ -390,13 +392,13 @@ class HostManagement:
                         new_entry['username'] = username
                         new_entry['password'] = password
                         vm_details_with_login.append(new_entry)
-                        logging.info(f"🟢 Credentials found for {host_name} : {username} : {password}")
+                        logging.info(f"Credentials found for {host_name} : {username} : {password}")
                         credentials_found = True
                         break
                     except paramiko.ssh_exception.AuthenticationException:
                         continue
                     except (paramiko.SSHException, OSError, Exception) as e:
-                        logging.warning(f"🟡 Cannot connect to {host_name} ({host_ip}): {str(e)}")
+                        logging.warning(f"Cannot connect to {host_name} ({host_ip}): {str(e)}")
                         break  # Stop trying other passwords if connection fails
                     finally:
                         ssh.close()  # Close the SSHClient object
@@ -408,16 +410,17 @@ class HostManagement:
                     new_entry['username'] = None
                     new_entry['password'] = None
                     vm_details_with_login.append(new_entry)
-                    logging.warning(f"🟡 No credentials found for {host_name} ({host_ip})")
+                    logging.warning(f"No credentials found for {host_name} ({host_ip})")
             else:
                 new_entry['hostname'] = host_name
                 new_entry['hostip'] = host_ip
                 new_entry['username'] = None
                 new_entry['password'] = None
                 vm_details_with_login.append(new_entry)
-                logging.info(f"🟡 No IP available for {host_name}")
+                logging.info(f"No IP available for {host_name}")
 
-        return vm_details_with_login    
+        return vm_details_with_login
+
     def set_up_aclx(self, vm_details_with_login, hostname, script_name):
         
         logging.info("------------- Configuring ACLX DB for the system --------------")
@@ -443,12 +446,12 @@ class HostManagement:
                     hostip = item['hostip']
                     username = item['username']
                     password = item['password']
-                    logging.warning(f"🟡 No VM matched hostname '{hostname}', using first available VM: {item['hostname']} ({hostip})")
+                    logging.warning(f"No VM matched hostname '{hostname}', using first available VM: {item['hostname']} ({hostip})")
                     break
         
         # Check if we have valid connection details
         if not hostip or not username or not password:
-            logging.error(f"🔴 Cannot configure ACLX: No valid VM found for hostname '{hostname}' or no VMs have valid credentials")
+            logging.error(f"Cannot configure ACLX: No valid VM found for hostname '{hostname}' or no VMs have valid credentials")
             return
             
         try:
@@ -475,21 +478,41 @@ class HostManagement:
                 error = _stderr.read().decode()
                 exit_status = _stdout.channel.recv_exit_status()                    
             if exit_status == 0:
-                logging.info(f"🟢 Aclx DB file restore is successful for host {hostname}")
+                logging.info(f"Aclx DB file restore is successful for host {hostname}")
         except Exception as e:
             logging.error(f"Error Occurred during aclx db restore : {e}")
         finally:
             client.close()
+    
+    def safe_exec_command(self, ssh_client, command, timeout=None, get_pty=False):
+        """Safely execute SSH command with error handling."""
+        try:
+            stdin, stdout, stderr = ssh_client.exec_command(command, timeout=timeout, get_pty=get_pty)
+            return stdin, stdout, stderr, None
+        except socket.timeout:
+            return None, None, None, "timeout"
+        except (paramiko.SSHException, OSError) as e:
+            return None, None, None, f"ssh_error: {str(e)}"
+        except Exception as e:
+            return None, None, None, f"error: {str(e)}"
     
     def execute_command(self, hostname,  host, username, password, release, updateadios):
 
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(host, username=username, password=password)
+        
+        # Set keepalive to prevent timeout
+        transport = ssh.get_transport()
+        transport.set_keepalive(30)  # Send keepalive every 30 seconds
 
         sec_ssh = paramiko.SSHClient()
         sec_ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         sec_ssh.connect(host, username=username, password=password)
+        
+        # Set keepalive for second connection too
+        sec_transport = sec_ssh.get_transport()
+        sec_transport.set_keepalive(30)
 
         # Issue "axcli state" command
         stdin, stdout, stderr = ssh.exec_command("axcli state | grep STATE | awk 'NR==1'")
@@ -530,42 +553,116 @@ class HostManagement:
                 stdin, stdout, stderr = ssh.exec_command("axcli state | grep STATE | awk 'NR==1'")
                 output = stdout.read().decode()
                 if "DNR" in output:
-                    logging.info(f"🟢 Dispatcher set to Not Ready for {hostname}")
+                    logging.info(f"Dispatcher set to Not Ready for {hostname}")
                     break
                 time.sleep(1)
         
         time.sleep(20)
-        if updateadios == 1:
-
-            logging.info(f"Updating {release} Adios Version for {hostname}")
-            stdin, stdout, stderr = ssh.exec_command(f"/usr/adios/axinstall -b {release}")
+        if updateadios == 1 and release is not None and release != "":
+            try:
+                logging.info(f"Updating {release} Adios Version for {hostname}")
+                # Use get_pty=True to keep connection alive, no timeout
+                stdin, stdout, stderr = ssh.exec_command(
+                    f"/usr/adios/axinstall -b {release}", 
+                    get_pty=True
+                )
+                
+                # Wait for command to complete and get exit status
+                exit_status = stdout.channel.recv_exit_status()
+                if exit_status == 0:
+                    logging.info(f"Adios has been Updated for host {hostname}")
+                else:
+                    logging.error(f"Adios update failed for {hostname} with exit code: {exit_status}")
+            except (paramiko.SSHException, OSError) as e:
+                logging.error(f"SSH error during Adios update for {hostname}: {str(e)}")
+            except Exception as e:
+                logging.error(f"Unexpected error during Adios update for {hostname}: {str(e)}")
+        
+        config_success = False
+        try:
+            # Check SSH connection is still alive before proceeding
+            if not transport or not transport.is_active():
+                logging.info(f"Reconnecting to {hostname} for configuration...")
+                ssh.close()
+                ssh = paramiko.SSHClient()
+                ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                ssh.connect(host, username=username, password=password)
+                transport = ssh.get_transport()
+                transport.set_keepalive(30)
+            
+            stdin, stdout, stderr = ssh.exec_command("axcli state | grep STATE | awk 'NR==1'")
+            output = stdout.read().decode()
+            logging.info(f"Configuring Dispatcher for host {hostname}")
+            
+            # Run axcli adiosx config and wait for it to return to prompt
+            stdin, stdout, stderr = ssh.exec_command("axcli adiosx config", get_pty=True)
             exit_status = stdout.channel.recv_exit_status()
             if exit_status == 0:
-                logging.info(f"🟢 Adios has been Updated for host {hostname}")
+                logging.info(f"Dispatcher configured for host {hostname}. Polling for Final Ready State........")
+                config_success = True
             else:
-                logging.info("Error Occurred : {}".format(exit_status))
-        
-        stdin, stdout, stderr = ssh.exec_command("axcli state | grep STATE | awk 'NR==1'")
-        output = stdout.read().decode()
-        logging.info(f"Configuring Dispatcher for host {hostname}")
-        stdin, stdout, stderr = ssh.exec_command("axcli adiosx config")
-        exit_status = stdout.channel.recv_exit_status()
-        if exit_status == 0:
-            logging.info(f"🟢 Dispatcher configured for host {hostname}. Polling for Final REady State........")
+                logging.error(f"Dispatcher config failed for {hostname} with exit code: {exit_status}")
+        except socket.timeout:
+            logging.warning(f"Config command timeout for {hostname}")
+        except (paramiko.SSHException, OSError) as e:
+            logging.warning(f"SSH error during config for {hostname}: {str(e)}")
+        except Exception as e:
+            logging.warning(f"Unexpected error during config for {hostname}: {str(e)}")
+
+        # Only poll for Ready state if configuration was successful
+        if not config_success:
+            logging.warning(f"Skipping Ready state polling for {hostname} due to configuration failure")
         else:
-            logging.info("Error Occurred : {}".format(exit_status))
+            max_wait_time = 3600  # Maximum 60 minutes wait
+            start_time = time.time()
+            
+            while True:
+                self._check_stop()
+                
+                # Check if we've exceeded max wait time
+                if time.time() - start_time > max_wait_time:
+                    logging.warning(f"Timeout waiting for {hostname} to be Ready after {max_wait_time} seconds")
+                    break
+                    
+                try:
+                    # Check if connection is still alive
+                    if not sec_transport or not sec_transport.is_active():
+                        logging.info(f"Reconnecting to {hostname} ({host})...")
+                        sec_ssh.close()
+                        sec_ssh = paramiko.SSHClient()
+                        sec_ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                        sec_ssh.connect(host, username=username, password=password)
+                        sec_transport = sec_ssh.get_transport()
+                        sec_transport.set_keepalive(30)
+                        
+                    stdin, stdout, stderr = sec_ssh.exec_command("axcli state | grep STATE | awk 'NR==1'")
+                    output = stdout.read().decode()
+                    if "Ready" in output:
+                        logging.info(f"{hostname} is Ready")
+                        break
+                except (paramiko.SSHException, OSError, Exception) as e:
+                    logging.warning(f"Connection error for {hostname}: {str(e)}. Attempting to reconnect...")
+                    try:
+                        sec_ssh.close()
+                        sec_ssh = paramiko.SSHClient()
+                        sec_ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                        sec_ssh.connect(host, username=username, password=password)
+                        sec_transport = sec_ssh.get_transport()
+                        sec_transport.set_keepalive(30)
+                    except Exception as reconnect_error:
+                        logging.error(f"Failed to reconnect to {hostname}: {str(reconnect_error)}")
+                        break
+                        
+                time.sleep(5)  # Increased from 1 to 5 seconds to reduce connection overhead
 
-        while True:
-            self._check_stop()
-            stdin, stdout, stderr = sec_ssh.exec_command("axcli state | grep STATE | awk 'NR==1'")
-            output = stdout.read().decode()
-            if "Ready" in output:
-                logging.info(f"🟢 {hostname} is Ready")
-                break
-            time.sleep(1)
-
-        ssh.close()
-        sec_ssh.close()
+        try:
+            ssh.close()
+        except:
+            pass
+        try:
+            sec_ssh.close()
+        except:
+            pass
     
     def ready_hosts(self, vm_details_with_login, release , updateadios ):
 
@@ -588,6 +685,45 @@ class HostManagement:
         for thread in threads:
             thread.join()
             
+    def get_final_adios_version(self, vm_details_with_login):
+        """Get the Adios version from a randomly selected available host."""
+        if not vm_details_with_login:
+            return
+        
+        # Filter to only VMs with valid credentials and IPs
+        connectable_vms = [
+            vm for vm in vm_details_with_login
+            if vm.get('hostip') and vm.get('username') and vm.get('password')
+        ]
+        
+        if not connectable_vms:
+            logging.warning("Could not get Adios version: no VMs with valid credentials")
+            return
+        
+        logging.info("------------- Getting Final Adios Version --------------")
+        
+        # Shuffle so we try a random VM each time
+        candidates = connectable_vms[:]
+        random.shuffle(candidates)
+        
+        for vm in candidates:
+            try:
+                ssh_final = paramiko.SSHClient()
+                ssh_final.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                ssh_final.connect(vm['hostip'], username=vm['username'], password=vm['password'])
+                
+                stdin, stdout, stderr = ssh_final.exec_command("axcli version")
+                version_output = stdout.read().decode().strip()
+                ssh_final.close()
+                
+                if version_output:
+                    logging.info(f"Final Adios Version on {vm['hostname']}: {version_output}")
+                    return
+            except Exception:
+                continue
+        
+        logging.warning("Could not get Adios version from any available host")
+    
     def _check_stop(self):
         if self.stop_event and self.stop_event.is_set():
             logging.info("------------- Script Stopped by User --------------")
@@ -710,6 +846,7 @@ class HostManagement:
                         self.ready_hosts(match_vms_with_cred, host_management_dict.get('adios_versions', ''), 1)
                     else:
                         self.ready_hosts(match_vms_with_cred, host_management_dict.get('adios_versions', ''), 0)
+                    self.get_final_adios_version(match_vms_with_cred)
                     logging.info("------------- End of Script --------------")
 
                 if host_management_dict['vm_reboot'] == "Yes" and host_management_dict['esx_reboot'] == "No " and host_management_dict['remediate'] == "No":
@@ -731,6 +868,7 @@ class HostManagement:
                         self.ready_hosts(match_vms_with_cred, host_management_dict.get('adios_versions', ''), 1)
                     else:
                         self.ready_hosts(match_vms_with_cred, host_management_dict.get('adios_versions', ''), 0)
+                    self.get_final_adios_version(match_vms_with_cred)
                     logging.info("------------- End of Script --------------")
 
                 if host_management_dict['ready_host'] == "Yes" and host_management_dict['esx_reboot'] == "No" and host_management_dict['vm_reboot'] == "No" and host_management_dict['remediate'] == "No":
@@ -744,6 +882,7 @@ class HostManagement:
                         self.ready_hosts(match_vms_with_cred, host_management_dict.get('adios_versions', ''), 1)
                     else:
                         self.ready_hosts(match_vms_with_cred, host_management_dict.get('adios_versions', ''), 0)
+                    self.get_final_adios_version(match_vms_with_cred)
                     logging.info("------------- End of Script --------------")
 
                 if host_management_dict['remediate'] == "Yes":
@@ -769,6 +908,7 @@ class HostManagement:
                         self.ready_hosts(match_vms_with_cred, host_management_dict.get('adios_versions', ''), 1)
                     else:
                         self.ready_hosts(match_vms_with_cred, host_management_dict.get('adios_versions', ''), 0)
+                    self.get_final_adios_version(match_vms_with_cred)
                     logging.info("------------- End of Script --------------")
             else:
                 logging.info(" No Details are found . Please verify manually ")
