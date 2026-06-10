@@ -9,7 +9,7 @@ from services.log_cleanup import get_cleanup_warning
 from components.log_viewer import create_log_viewer
 from streamlit_autorefresh import st_autorefresh
 
-st.set_page_config(layout="wide")
+# Page config is set once in streamlitapp.py (the app entry point).
 
 # Centered single column form
 col1, col2, col3 = st.columns([1, 2, 1])
@@ -234,7 +234,7 @@ if live_log_ongoing:
         with open(live_log_path, "r", encoding="utf-8") as lf:
             log_lines = lf.readlines()
         log_text = "".join(log_lines) if log_lines else ""
-        st.code(log_text, language=None, height=700)
+        st.code(log_text, language=None)
     except Exception as e:
         st.error(f"Error reading log: {e}")
 else:

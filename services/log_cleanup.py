@@ -1,5 +1,6 @@
 import os
 import time
+import threading
 from datetime import datetime, timedelta
 
 class LogCleanup:
@@ -109,6 +110,33 @@ def cleanup_old_logs():
     """Convenience function to perform log cleanup."""
     cleanup = LogCleanup()
     return cleanup.schedule_cleanup()
+
+
+# Module-level guard so only one periodic cleanup thread runs per process,
+# regardless of how many Streamlit sessions/reruns call the starter.
+_periodic_started = False
+_periodic_lock = threading.Lock()
+
+
+def start_periodic_cleanup(interval_hours=24):
+    """Start a background thread that runs log cleanup once now and then
+    every ``interval_hours`` (default: every 1 day). Idempotent per process."""
+    global _periodic_started
+    with _periodic_lock:
+        if _periodic_started:
+            return
+        _periodic_started = True
+
+    def _loop():
+        while True:
+            try:
+                cleanup_old_logs()
+            except Exception:
+                # Never let cleanup errors kill the background thread
+                pass
+            time.sleep(interval_hours * 3600)
+
+    threading.Thread(target=_loop, daemon=True).start()
 
 
 def get_cleanup_warning():

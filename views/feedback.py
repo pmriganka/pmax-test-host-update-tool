@@ -3,7 +3,7 @@ import win32com.client
 import pythoncom
 from datetime import datetime
 
-st.set_page_config(layout="wide")
+# Page config is set once in streamlitapp.py (the app entry point).
 
 st.title("� Feedbacks and Change Request")
 st.markdown("---")
