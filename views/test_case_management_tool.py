@@ -1,16 +1,43 @@
 import streamlit as st
 from streamlit_quill import st_quill
-import numpy as np
 from services.fetch_testcase import Testcase
 from services.update_test_case import Updatetestcase
 from services.notification_utils import NotificationManager
-from services.auth_service import get_auth_service
+from services.auth_service import get_auth_service, require_authentication
 import time
 import datetime
 import html
 import os
+import re
 
-st.set_page_config(layout="wide")
+# Authentication is required ONLY for this page. All other pages remain
+# accessible without logging in. (Page config is set in streamlitapp.py.)
+if not require_authentication():
+    st.stop()
+
+
+def apply_image_width(html_content, max_width_pct):
+    """Force every <img> in the HTML to a max width (%) while keeping aspect ratio."""
+    if not html_content:
+        return html_content
+
+    def _repl(match):
+        tag = match.group(0)
+        # Drop any hard-coded width/height attributes so the style takes over
+        tag = re.sub(r'\s(width|height)="[^"]*"', '', tag)
+        sizing = "max-width:{}%;height:auto;".format(max_width_pct)
+        if re.search(r'style="', tag):
+            tag = re.sub(
+                r'style="([^"]*)"',
+                lambda s: 'style="{};{}"'.format(s.group(1).rstrip(';'), sizing),
+                tag,
+                count=1,
+            )
+        else:
+            tag = tag[:-1] + ' style="{}">'.format(sizing)
+        return tag
+
+    return re.sub(r'<img[^>]*>', _repl, html_content)
 
 # Get authentication headers
 auth_service = get_auth_service()
@@ -30,7 +57,28 @@ with col1:
         
         remove_attachment = st.checkbox('Remove Attachment')
         # testcase_steps = st.text_area(" Enter Test Steps", height=200)
-        testcase_steps = st_quill(placeholder="Enter your test steps here...", html=True )
+        testcase_steps = st_quill(
+            placeholder="Enter your test steps here...",
+            html=True,
+            toolbar=[
+                [{"font": []}, {"size": ["small", False, "large", "huge"]}],
+                ["bold", "italic", "underline", "strike"],
+                [{"color": []}, {"background": []}],
+                [{"list": "ordered"}, {"list": "bullet"}],
+                [{"header": [1, 2, 3, 4, 5, 6, False]}],
+                ["link", "image", "code-block"],
+                ["clean"],
+            ],
+            key="testcase_steps_editor",
+        )
+        image_max_width = st.slider(
+            "Max image width (%)",
+            min_value=10,
+            max_value=100,
+            value=100,
+            step=5,
+            help="Scale embedded images/snippets in the saved test steps and the preview.",
+        )
         
         form_c1 , form_c2 = st.columns(2)
         with form_c1:
@@ -85,7 +133,7 @@ with col2:
             else:
                 for step in fetch_test_case_steps:
                     # st.markdown(step['description'], unsafe_allow_html= True)
-                    st.markdown(f"""<div>{step['description']}</div>""", unsafe_allow_html= True)
+                    st.markdown(f"""<div>{apply_image_width(step['description'], image_max_width)}</div>""", unsafe_allow_html= True)
 
     if update:
         testcase = Updatetestcase(auth_headers)
@@ -245,6 +293,7 @@ with col2:
                                 # If it's already a string, use it directly
                                 steps_text = str(testcase_steps)
                             
+                            steps_text = apply_image_width(steps_text, image_max_width)
                             testcase.add_test_steps(tc, steps_text)
                             st.success("✅ Test steps updated successfully")
                             notifications.append(

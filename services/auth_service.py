@@ -10,6 +10,11 @@ class AuthenticationService:
     def __init__(self):
         self.api_base_url = os.getenv('QTEST_API_BASE_URL', 'https://qtest.gtie.dell.com/api/v3')
         self.project_id = os.getenv('QTEST_PROJECT_ID', '442')
+        # (connect_timeout, read_timeout) in seconds. Read timeout is generous
+        # because the qTest API can be slow over VPN/corporate networks.
+        # Override with QTEST_API_TIMEOUT (read timeout, seconds) if needed.
+        self.connect_timeout = float(os.getenv('QTEST_API_CONNECT_TIMEOUT', '10'))
+        self.read_timeout = float(os.getenv('QTEST_API_TIMEOUT', '60'))
     
     def validate_bearer_token_format(self, token_string: str) -> bool:
         """Validate that the token follows the format 'Bearer <token>'"""
@@ -42,7 +47,11 @@ class AuthenticationService:
             # Make a simple API call to test the token
             # Using projects endpoint as it's usually accessible
             test_url = f"{self.api_base_url}/projects"
-            response = requests.get(test_url, headers=headers, timeout=10)
+            response = requests.get(
+                test_url,
+                headers=headers,
+                timeout=(self.connect_timeout, self.read_timeout),
+            )
             
             if response.status_code == 200:
                 return True, "Token is valid"
@@ -53,6 +62,11 @@ class AuthenticationService:
             else:
                 return False, f"API returned status {response.status_code}"
                 
+        except requests.exceptions.Timeout:
+            return False, (
+                f"qTest did not respond within {self.read_timeout:.0f}s. "
+                "Check your VPN/network connection, or increase QTEST_API_TIMEOUT in .env."
+            )
         except requests.exceptions.RequestException as e:
             return False, f"Network error: {str(e)}"
         except Exception as e:
@@ -117,12 +131,11 @@ class AuthenticationService:
 
 def display_login_page():
     """Display the login/authentication page"""
-    st.set_page_config(
-        page_title="TestHost Pro - Authentication",
-        page_icon="🔐",
-        layout="centered"
-    )
-    
+    # NOTE: st.set_page_config is intentionally NOT called here. This login page
+    # is now rendered inside an individual page that already sets its own page
+    # config, and calling set_page_config twice in a single run raises a
+    # StreamlitAPIException.
+
     # Custom CSS for login page
     st.markdown("""
     <style>

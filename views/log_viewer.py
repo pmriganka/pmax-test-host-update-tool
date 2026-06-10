@@ -5,7 +5,7 @@ from services.handling_log import get_latest_log, get_log_stats
 from services.log_cleanup import LogCleanup, get_cleanup_warning
 from components.log_viewer import create_log_viewer, display_latest_log
 
-st.set_page_config(layout="wide")
+# Page config is set once in streamlitapp.py (the app entry point).
 
 st.title("📋 Log Viewer Dashboard")
 st.markdown("---")

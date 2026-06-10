@@ -178,7 +178,7 @@ class LogViewer:
         
         if auto_scroll:
             # Use st.code with auto-scroll behavior
-            self.log_placeholder.code(log_content, language=None, height=400)
+            self.log_placeholder.code(log_content, language=None)
         else:
             # Use st.markdown for static display
             self.log_placeholder.markdown(f"```\n{log_content}\n```")

@@ -42,35 +42,54 @@ if %errorlevel% neq 0 (
     goto :cleanup
 )
 
-echo [1/3] Checking virtual environment...
+echo [1/4] Checking virtual environment...
+
+set "NEED_INSTALL=1"
 
 :: Create virtual environment in the same folder as this batch file
-if not exist "%APP_DIR%myvenv" (
+if not exist "%APP_DIR%myvenv\Scripts\activate.bat" (
     echo       Creating virtual environment in %APP_DIR%myvenv ...
     python -m venv "%APP_DIR%myvenv"
-    if %errorlevel% neq 0 (
+    if errorlevel 1 (
         echo [ERROR] Failed to create virtual environment.
         goto :cleanup
     )
     echo       Virtual environment created successfully.
 ) else (
     echo       Virtual environment already exists at %APP_DIR%myvenv
+    :: Skip install only if the previously installed requirements match the current ones
+    if exist "%APP_DIR%myvenv\.installed_requirements.txt" (
+        fc /b "%APP_DIR%requirements.txt" "%APP_DIR%myvenv\.installed_requirements.txt" >nul 2>&1
+        if not errorlevel 1 set "NEED_INSTALL=0"
+    )
 )
 
 echo.
-echo [2/3] Installing packages...
-
-:: Use the venv's own pip via absolute path (no activate needed)
-"%APP_DIR%myvenv\Scripts\python.exe" -m pip install --upgrade pip --quiet
-"%APP_DIR%myvenv\Scripts\python.exe" -m pip install -r "%APP_DIR%requirements.txt" --quiet
+echo [2/4] Activating virtual environment...
+call "%APP_DIR%myvenv\Scripts\activate.bat"
 if %errorlevel% neq 0 (
-    echo [ERROR] Failed to install packages. Check requirements.txt.
+    echo [ERROR] Failed to activate virtual environment.
     goto :cleanup
 )
-echo       Packages installed successfully.
+echo       Virtual environment activated.
 
 echo.
-echo [3/3] Launching Streamlit app...
+if "%NEED_INSTALL%"=="0" (
+    echo [3/4] Required packages already installed - skipping installation.
+) else (
+    echo [3/4] Installing packages from requirements.txt...
+    python -m pip install --upgrade pip --quiet
+    python -m pip install -r "%APP_DIR%requirements.txt" --quiet
+    if errorlevel 1 (
+        echo [ERROR] Failed to install packages. Check requirements.txt.
+        goto :cleanup
+    )
+    copy /Y "%APP_DIR%requirements.txt" "%APP_DIR%myvenv\.installed_requirements.txt" >nul
+    echo       Packages installed successfully.
+)
+
+echo.
+echo [4/4] Launching Streamlit app...
 echo ============================================
 echo   App is starting... 
 echo   It will open in your default browser.
@@ -78,7 +97,7 @@ echo   Press Ctrl+C in this window to stop.
 echo ============================================
 echo.
 
-"%APP_DIR%myvenv\Scripts\streamlit.exe" run "%APP_DIR%streamlitapp.py"
+python -m streamlit run "%APP_DIR%streamlitapp.py"
 
 :cleanup
 :: Remove the subst drive mapping if it was created
